@@ -7,6 +7,8 @@ Simple interface para probar ChatGPT.
 - Clonar el repositorio
 - `npm install`
 - `npm start`
+- http://localhost:3000
+- Ingresar en la configuración el apiKey obtenido en tu cuenta OpenAI
 
 ## Tecnología
 
