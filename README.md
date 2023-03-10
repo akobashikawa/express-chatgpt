@@ -9,6 +9,8 @@ Simple interface para probar ChatGPT.
 - `npm start`
 - http://localhost:3000
 - Ingresar en la configuración el apiKey obtenido en tu cuenta OpenAI
+- También se puede indicar en el apiKey en el url:
+    - http://localhost:3000/?apiKey=secret
 
 ## Tecnología
 
