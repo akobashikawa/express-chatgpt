@@ -45,8 +45,8 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
-      <div class="config shadow p-2" v-show="showConfig">
+    <div class="container" v-show="showConfig">
+      <div class="config shadow p-2 mb-4">
         <h3>Configuración</h3>
         <input type="password" class="form-control" placeholder="apiKey" v-model="apiKey">
         <div class="row my-1">
@@ -57,11 +57,20 @@
             <input type="text" class="form-control" placeholder="Max Tokens" v-model="max_tokens">
           </div>
         </div>
-        <button class="btn btn-light btn-sm mt-2" @click="setConfig">Guardar</button>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" v-model="holdHistory" id="saveHistory">
+          <label class="form-check-label" for="saveHistory">
+            Mantener historial en el servidor
+          </label>
+        </div>
+        <button class="btn btn-primary btn-sm mt-2" @click="setConfig">Guardar</button>
         <button class="btn btn-light btn-sm mt-2" @click="toggleConfig">Cerrar</button>
       </div>
-      <div class="history p-2" v-if="history">
-        <button class="btn btn-light btn-sm mb-2" @click="getHistory">Recargar</button>
+    </div>
+
+    <div class="">
+      <div class="history p-2">
+        <button class="btn btn-light btn-sm mb-2" @click="getHistory" v-if="holdHistory">Recargar</button>
         <button class="btn btn-light btn-sm mb-2 mx-2" @click="clearHistory">Limpiar</button>
 
         <ul class="list-unstyled">
@@ -104,6 +113,7 @@
           max_tokens: 50,
           prompt: 'Hola',
           history: [],
+          holdHistory: false,
           error: null,
           showConfig: true,
         }
@@ -128,6 +138,7 @@
             apikey: this.apiKey,
             model: this.model,
             max_tokens: this.max_tokens,
+            holdHistory: this.holdHistory,
           };
 
           try {
