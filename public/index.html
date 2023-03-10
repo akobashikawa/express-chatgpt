@@ -62,6 +62,7 @@
       </div>
       <div class="history p-2" v-if="history">
         <button class="btn btn-light btn-sm mb-2" @click="getHistory">Recargar</button>
+        <button class="btn btn-light btn-sm mb-2" @click="clearHistory">Limpiar</button>
 
         <ul class="list-unstyled">
           <li v-for="item of history">
@@ -168,6 +169,20 @@
           try {
             const response = await axios.get(url);
             this.history = response.data;
+          } catch (error) {
+            console.log(error);
+            this.error = error;
+          }
+        },
+
+        async clearHistory() {
+          this.error = null;
+
+          const url = '/api/history';
+
+          try {
+            const response = await axios.delete(url);
+            this.history = [];
           } catch (error) {
             console.log(error);
             this.error = error;

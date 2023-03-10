@@ -50,7 +50,12 @@ const service = {
 
     getHistory() {
         return this.history;
-    }
+    },
+
+    clearHistory() {
+        this.history = [];
+    },
+    
 };
 
 module.exports = service;

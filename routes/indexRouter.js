@@ -43,4 +43,13 @@ router.get('/history', async (req, res, next) => {
   }
 });
 
+router.delete('/history', async (req, res, next) => {
+  try {
+    const response = await chatService.clearHistory();
+    res.json(response);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 module.exports = router;
