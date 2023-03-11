@@ -21,3 +21,5 @@ Simple interface para probar ChatGPT.
 - https://express-chatgpt.onrender.com
 - En la configuración, marcando la opción *Mantener historial en la RAM del servidor*, el historial del chat se mantiene temporalmente en la memoria del servidor, hasta que se elimine con el boton _Limpiar_ o cada se reinicie el servicio.
 - El historial correspondiente a cada apiKey se guarda por separado, de modo que dos personas puedan usar la aplicación independientemente.
+- El markdown devuelto por ChatGPT es convertido a HTML.
+- Se hace highlight de los bloques `code`.
