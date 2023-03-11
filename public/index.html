@@ -94,7 +94,7 @@
     </div>
 
     <div class="container-fluid">
-      <div v-if="openai" class="mt-2">
+      <div v-show="openai" class="mt-2">
         <textarea class="form-control" placeholder="Tu pregunta" v-model="prompt" ref="prompt"></textarea>
         <button type="button" class="btn btn-primary form-control" @click="sendPrompt">Enviar</button>
       </div>
@@ -193,6 +193,9 @@
             this.setAuthorization(this.apiKey);
             this.openai = true;
             this.setResultMessage(response.data);
+            setTimeout(()=> {
+              this.$refs.prompt.focus();
+            }, 500);
           } catch (error) {
             this.setResultError(error);
           }
