@@ -38,7 +38,7 @@ router.put('/config', (req, res, next) => {
   res.json({
     message: 'api actualizado con nueva configuración',
     model,
-    max_tokens,
+    // max_tokens,
   });
 });
 
