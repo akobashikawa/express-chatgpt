@@ -9,15 +9,15 @@ const service = {
 
     create({model, max_tokens}) {
         const obj = Object.create(this);
-        this.history = [];
-        this.model = model || "text-davinci-002";
+        this.history = {};
+        // this.model = model || "text-davinci-003";
+        this.model = model || "gpt-3.5-turbo";
         this.max_tokens = max_tokens || 50;
         this.holdHistory = false;
         return obj;
     },
 
     setConfig(config) {
-        console.log(config);
         this.model = config.model;
         this.max_tokens = config.max_tokens;
         this.holdHistory = config.holdHistory;
@@ -27,27 +27,25 @@ const service = {
         });
 
         this.openai = new OpenAIApi(configuration);
-        console.log(this.openai);
+        if (this.holdHistory) {
+            this.history[config.apiKey] = [];
+        }
     },
 
-    async processPrompt(prompt) {
+    async processPrompt(prompt, apiKey) {
         try {
-            console.log({
-                model: this.model,
-                prompt,
-                max_tokens: this.max_tokens,
-            });
             const completion = await this.openai.createCompletion({
                 model: this.model,
                 prompt,
-                max_tokens: this.max_tokens,
+                // max_tokens: this.max_tokens,
             });
             const response = completion.data.choices[0].text;
-            console.log(response);
+            // console.log(response);
             if (this.holdHistory) {
-                this.history.push({
+                this.history[apiKey].push({
                     prompt, response
                 });
+                // console.log(this.history);
             }
             return response;
         } catch (error) {
@@ -55,12 +53,13 @@ const service = {
         }
     },
 
-    getHistory() {
-        return this.history;
+    getHistory(apiKey) {
+        // console.log(this.history[apiKey]);
+        return this.history[apiKey];
     },
 
-    clearHistory() {
-        this.history = [];
+    clearHistory(apiKey) {
+        this.history[apiKey] = [];
     },
 
 };

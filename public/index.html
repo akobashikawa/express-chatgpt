@@ -17,7 +17,7 @@
     }
 
     .prompt {
-      background-color: #aea;
+      background-color: #ecffec;
       padding: 0.3em 1em 0.3em;
       margin-bottom: 2px;
       border-radius: 1em 0 1em 1em;
@@ -31,7 +31,15 @@
     }
 
     .history {
-      background-color: #abe;
+      background-color: #cdf;
+    }
+
+    .result-message.success {
+      background-color: rgb(136, 255, 146);
+    }
+
+    .result-message.error {
+      background-color: rgb(255, 172, 172);
     }
   </style>
 </head>
@@ -54,7 +62,7 @@
             <input type="text" class="form-control" placeholder="Modelo" v-model="model">
           </div>
           <div class="col">
-            <input type="text" class="form-control" placeholder="Max Tokens" v-model="max_tokens">
+            <!-- <input type="text" class="form-control" placeholder="Max Tokens" v-model="max_tokens"> -->
           </div>
         </div>
         <div class="form-check">
@@ -69,9 +77,9 @@
     </div>
 
     <div class="">
-      <div class="history p-2">
+      <div class="history p-2" v-if="openai && (holdHistory || history.length > 0)">
         <button class="btn btn-light btn-sm mb-2" @click="getHistory" v-if="holdHistory">Recargar</button>
-        <button class="btn btn-light btn-sm mb-2 mx-2" @click="clearHistory">Limpiar</button>
+        <button class="btn btn-light btn-sm mb-2 mx-2" @click="clearHistory" v-if="history.length > 0">Limpiar</button>
 
         <ul class="list-unstyled">
           <li v-for="item of history">
@@ -83,12 +91,14 @@
     </div>
 
     <div class="container-fluid">
-      <div v-if="openai">
+      <div v-if="openai" class="mt-2">
         <textarea class="form-control" placeholder="Tu pregunta" v-model="prompt"></textarea>
         <button type="button" class="btn btn-primary form-control" @click="sendPrompt">Enviar</button>
       </div>
-
-      <div class="font-monospace bg-warning p-2 my-2" v-if="error">{{ error }}</div>
+    </div>
+    
+    <div class="container">
+      <div class="result-message font-monospace p-2 my-2" :class="[resultClass]" v-if="resultMessage">{{ resultMessage }}</div>
     </div>
 
 
@@ -102,19 +112,24 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
   <script>
-    const { createApp } = Vue
+    axios.defaults.headers.post['Accept'] = 'application/json, text/plain, */*';
+    axios.defaults.headers.post['Content-Type'] = 'application/json; charset=UTF-8';
+
+    const { createApp } = Vue;
 
     createApp({
       data() {
         return {
           openai: false,
           apiKey: '',
-          model: 'text-davinci-002',
+          model: 'text-davinci-003',
+          // model: 'gpt-3.5-turbo',
           max_tokens: 50,
           prompt: 'Hola',
           history: [],
           holdHistory: false,
-          error: null,
+          resultMessage: null,
+          resultClass: null,
           showConfig: true,
         }
       },
@@ -130,9 +145,33 @@
           this.showConfig = !this.showConfig;
         },
 
-        async setConfig() {
-          this.error = null;
+        setResultMessage(message) {
+          this.resultMessage = message;
+          this.resultClass = 'success';
+        },
 
+        setResultError(error) {
+          console.log(error);
+          const message = error.response.data || error;
+          const status = error.response.status || 401;
+          this.resultMessage = message;
+          switch (status) {
+            case 200:
+              this.resultClass = 'bg-success';
+              break;
+            case 401:
+              this.resultClass = 'bg-warning';
+              break;
+            case 500:
+              this.resultClass = 'error';
+              break;
+            default:
+              this.resultClass = 'bg-info';
+              break;
+          }
+        },
+
+        async setConfig() {
           const url = '/api/config';
           const body = {
             apikey: this.apiKey,
@@ -143,17 +182,15 @@
 
           try {
             const response = await axios.put(url, body);
-            this.error = response.data;
+            this.setAuthorization(this.apiKey);
             this.openai = true;
+            this.setResultMessage(response.data);
           } catch (error) {
-            console.log(error);
-            this.error = error.message;
+            this.setResultError(error);
           }
         },
 
         async sendPrompt() {
-          this.error = null;
-
           const url = '/api/prompts';
           const body = {
             prompt: this.prompt
@@ -167,8 +204,7 @@
             };
             this.history.push(newItem);
           } catch (error) {
-            console.log(error);
-            this.error = error;
+            this.setResultError(error);
           }
         },
 
@@ -180,9 +216,9 @@
           try {
             const response = await axios.get(url);
             this.history = response.data;
+            this.setResultMessage('Historial actualizado');
           } catch (error) {
-            console.log(error);
-            this.error = error;
+            this.setResultError(error);
           }
         },
 
@@ -194,16 +230,25 @@
           try {
             const response = await axios.delete(url);
             this.history = [];
+            this.setResultMessage('Historial limpiado');
           } catch (error) {
-            console.log(error);
-            this.error = error;
+            this.setResultError(error);
           }
+        },
+
+        setAuthorization(apiKey) {
+          const authorization = `Bearer ${apiKey}`;
+          axios.defaults.headers.common['Authorization'] = authorization;
         },
 
       },
 
       mounted() {
-        this.apiKey = this.getQueryParam('apiKey');
+        const apiKeyInUrl = this.getQueryParam('apiKey');
+        if (apiKeyInUrl) {
+          this.apiKey = apiKeyInUrl;
+          this.setAuthorization(this.apiKey);
+        }
       }
     }).mount('#app')
   </script>
