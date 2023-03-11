@@ -87,7 +87,7 @@
         <ul class="list-unstyled">
           <li v-for="item of history">
             <div class="prompt">{{ item.prompt }}</div>
-            <div class="response">{{ item.response }}</div>
+            <div class="response" v-html="item.response"></div>
           </li>
         </ul>
       </div>

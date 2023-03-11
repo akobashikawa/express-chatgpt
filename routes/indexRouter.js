@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const showdown  = require('showdown');
+converter = new showdown.Converter();
 
 const chatService = require('./chatService').create({
   // model: "text-davinci-002",
@@ -48,8 +50,9 @@ router.post('/prompts', async (req, res, next) => {
   const prompt = req.body.prompt;
   try {
     const response = await chatService.processPrompt(prompt, apiKey);
+    const responseHTML = converter.makeHtml(response);
     // console.log('/prompts', response);
-    res.json(response);
+    res.json(responseHTML);
   } catch (error) {
     sendErrorMessage(res, error);
   }
