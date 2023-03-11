@@ -36,7 +36,7 @@ router.put('/config', (req, res, next) => {
   const config = {apiKey, model, holdHistory};
   chatService.setConfig(config);
   res.json({
-    message: 'api actualizado con nueva configuración',
+    message: 'apiKey actualizado',
     model,
     // max_tokens,
   });
