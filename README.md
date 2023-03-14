@@ -2,6 +2,9 @@
 
 Simple interface para probar ChatGPT.
 
+![image](https://user-images.githubusercontent.com/108734/224945972-14d97732-ecd7-48da-b0bb-402954e086ea.png)
+
+
 ## Tecnología
 
 - ExpressJS para el backend
