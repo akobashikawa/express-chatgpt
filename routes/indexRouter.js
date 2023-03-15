@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const showdown  = require('showdown');
-converter = new showdown.Converter();
+const converter = new showdown.Converter();
 
 const chatService = require('./chatService').create({
   // model: "text-davinci-002",

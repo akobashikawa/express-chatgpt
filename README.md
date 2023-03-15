@@ -7,6 +7,8 @@ Simple interface para probar ChatGPT.
 - ExpressJS para el backend
 - VueJS para el frontend
 
+Puedes encontrar una versión que sólamente requiere Vue: https://github.com/akobashikawa/vue-chatgpt
+
 ## Instalación
 
 - Clonar el repositorio
